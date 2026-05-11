@@ -1,0 +1,55 @@
+name: Release
+
+# Triggered by pushing a `v*` tag. Publishes to npm via the NPM_TOKEN
+# automation token stored as a repo secret.
+#
+# The token was generated from the CLI with `npm token create` against the
+# shared @o1-labs account. Web-based OIDC setup wasn't available at the
+# time of bootstrap. Rotate periodically; if leaked, revoke via
+# `npm token revoke <id>` and regenerate.
+#
+# Release flow:
+#   - bump version in package.json
+#   - git tag vX.Y.Z && git push origin vX.Y.Z
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.0'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:unit
+
+      - name: Verify tag matches package.json version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -e "console.log(require('./package.json').version)")
+          if [ "$tag" != "$pkg" ]; then
+            echo "tag $GITHUB_REF_NAME does not match package.json $pkg"; exit 1
+          fi
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "${{ github.ref_name }}" --generate-notes

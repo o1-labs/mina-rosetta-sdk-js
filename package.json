@@ -1,0 +1,64 @@
+{
+  "name": "@o1-labs/mina-rosetta-sdk",
+  "version": "0.0.1",
+  "description": "TypeScript SDK for the Mina Rosetta (Coinbase Mesh) endpoints — Data + Construction APIs, complements mina-signer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/o1-labs/mina-rosetta-sdk-js"
+  },
+  "homepage": "https://github.com/o1-labs/mina-rosetta-sdk-js",
+  "bugs": "https://github.com/o1-labs/mina-rosetta-sdk-js/issues",
+  "license": "Apache-2.0",
+  "author": "O(1) Labs <build@o1labs.org>",
+  "type": "module",
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/src/index.d.ts",
+      "import": "./build/src/index.js"
+    }
+  },
+  "files": [
+    "build/src",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "keywords": [
+    "mina",
+    "mina-protocol",
+    "rosetta",
+    "mesh",
+    "coinbase",
+    "blockchain",
+    "exchange-integration",
+    "sdk"
+  ],
+  "scripts": {
+    "build": "rimraf build && tsc",
+    "test": "npm run build && npm run test:unit",
+    "test:unit": "node --enable-source-maps --test ./build/tests/*.test.js",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts' 'examples/**/*.ts'",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "mina-signer": "^4.0.0 || ^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "mina-signer": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.48.0",
+    "prettier": "3.0.3",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2"
+  }
+}
