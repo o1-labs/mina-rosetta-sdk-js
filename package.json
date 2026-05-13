@@ -38,6 +38,9 @@
     "exchange-integration",
     "sdk"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rimraf build && tsc",
     "test": "npm run build && npm run test:unit",
@@ -50,7 +53,9 @@
     "mina-signer": "^4.0.0 || ^3.0.0"
   },
   "peerDependenciesMeta": {
-    "mina-signer": { "optional": true }
+    "mina-signer": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
