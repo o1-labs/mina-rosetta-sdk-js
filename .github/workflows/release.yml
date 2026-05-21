@@ -1,12 +1,13 @@
 name: Release
 
-# Triggered by pushing a `v*` tag. Publishes to npm via the NPM_TOKEN
-# automation token stored as a repo secret.
+# Publishes the package to npm via OIDC trusted publishing when a `v*` tag
+# is pushed. No NPM_TOKEN required.
 #
-# The token was generated from the CLI with `npm token create` against the
-# shared @o1-labs account. Web-based OIDC setup wasn't available at the
-# time of bootstrap. Rotate periodically; if leaked, revoke via
-# `npm token revoke <id>` and regenerate.
+# Trusted publishing: register this workflow on npmjs.com under the
+# `@o1-labs/mina-rosetta-sdk` package settings — Trusted Publisher → GitHub
+# Actions → repository `o1-labs/mina-rosetta-sdk-js`, workflow `release.yml`,
+# environment `npm`. Once registered, the OIDC `id-token` claim authenticates
+# the publish step.
 #
 # Release flow:
 #   - bump version in package.json
@@ -17,12 +18,13 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: write # for `gh release create`
+      id-token: write # for OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
 
@@ -31,6 +33,13 @@ jobs:
           node-version: '20.18.0'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+
+      # OIDC trusted publishing (the OIDC -> npm token exchange) requires
+      # npm >= 11.5.1. Node 20 ships npm 10.x, which signs provenance via
+      # GitHub OIDC but cannot authenticate the publish itself, so the
+      # registry rejects the PUT with a 404. Upgrade before publishing.
+      - run: npm install -g npm@latest
+      - run: npm --version
 
       - run: npm ci
       - run: npm run build
@@ -45,9 +54,7 @@ jobs:
           fi
 
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+        run: npm publish --provenance --access public
 
       - name: Create GitHub release
         env:
