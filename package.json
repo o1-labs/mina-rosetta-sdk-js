@@ -1,6 +1,6 @@
 {
   "name": "@o1-labs/mina-rosetta-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TypeScript SDK for the Mina Rosetta (Coinbase Mesh) endpoints — Data + Construction APIs, complements mina-signer",
   "repository": {
     "type": "git",
@@ -50,7 +50,9 @@
     "mina-signer": "^4.0.0 || ^3.0.0"
   },
   "peerDependenciesMeta": {
-    "mina-signer": { "optional": true }
+    "mina-signer": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^20.5.7",

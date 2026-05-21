@@ -32,6 +32,7 @@ import type {
   ConstructionPreprocessResponse,
   ConstructionSubmitResponse,
   MempoolResponse,
+  MempoolTransactionResponse,
   NetworkIdentifier,
   NetworkListResponse,
   NetworkOptionsResponse,
@@ -232,6 +233,14 @@ export class RosettaClient {
   mempool() {
     return this.post<MempoolResponse>('/mempool', {
       network_identifier: this.#network,
+    });
+  }
+
+  /** Fetch the full operations of a single pending transaction by hash. */
+  mempoolTransaction(transactionHash: string) {
+    return this.post<MempoolTransactionResponse>('/mempool/transaction', {
+      network_identifier: this.#network,
+      transaction_identifier: { hash: transactionHash },
     });
   }
 
