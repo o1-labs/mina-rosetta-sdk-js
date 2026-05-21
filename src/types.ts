@@ -171,6 +171,11 @@ export interface MempoolResponse {
   transaction_identifiers: { hash: string }[];
 }
 
+export interface MempoolTransactionResponse {
+  transaction: Transaction;
+  metadata?: Record<string, unknown>;
+}
+
 export interface SearchTransactionsResponse {
   transactions: {
     block_identifier?: BlockIdentifier;

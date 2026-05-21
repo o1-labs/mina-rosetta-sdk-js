@@ -66,6 +66,7 @@ export type {
   Currency,
   CurveType,
   MempoolResponse,
+  MempoolTransactionResponse,
   NetworkIdentifier,
   NetworkListResponse,
   NetworkOptionsResponse,

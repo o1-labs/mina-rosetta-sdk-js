@@ -66,6 +66,35 @@ test('network identifier is attached to every request', async () => {
   });
 });
 
+test('mempoolTransaction sends the transaction identifier and parses the envelope', async () => {
+  let captured: any = null;
+  let capturedUrl: string | undefined;
+  const f: typeof fetch = async (url, init) => {
+    capturedUrl = String(url);
+    captured = JSON.parse(init?.body as string);
+    return json({
+      transaction: {
+        transaction_identifier: { hash: 'Ckp5txhash' },
+        operations: [],
+      },
+    });
+  };
+  const client = new RosettaClient({
+    baseUrl: 'http://x',
+    network: 'devnet',
+    retries: 1,
+    fetch: f,
+  });
+  const res = await client.mempoolTransaction('Ckp5txhash');
+  assert.equal(capturedUrl, 'http://x/mempool/transaction');
+  assert.deepEqual(captured.transaction_identifier, { hash: 'Ckp5txhash' });
+  assert.deepEqual(captured.network_identifier, {
+    blockchain: 'mina',
+    network: 'devnet',
+  });
+  assert.equal(res.transaction.transaction_identifier.hash, 'Ckp5txhash');
+});
+
 test('accountBalance passes optional token id', async () => {
   let captured: any = null;
   const f: typeof fetch = async (_url, init) => {
