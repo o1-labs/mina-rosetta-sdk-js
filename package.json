@@ -38,6 +38,9 @@
     "exchange-integration",
     "sdk"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rimraf build && tsc",
     "test": "npm run build && npm run test:unit",
